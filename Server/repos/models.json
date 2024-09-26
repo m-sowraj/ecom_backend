@@ -1,0 +1,94 @@
+{
+  "COMPANY": {
+    "id": "string",
+    "name": "string",
+    "domain": "string",
+    "created_at": "timestamp",
+    "updated_at": "timestamp",
+    "SETTINGS": {
+      "id": "string",
+      "company_id": "string",
+      "theme": "string",
+      "logo_url": "string",
+      "custom_fields": "json"
+    }
+
+  },
+  "USER": {
+    "id": "string",
+    "company_id": "string",
+    "email": "string",
+    "hashed_password": "string",
+    "name": "string",
+    "role": "string",
+    "created_at": "timestamp",
+    "updated_at": "timestamp",
+    "address": "string"
+  },
+  "ORDER": {
+    "id": "string",
+    "company_id": "string",
+    "user_id": "string",
+    "total_amount": "float",
+    "status": "string",
+    "address": "string",
+    "phone": "string",
+    "created_at": "timestamp",
+    "updated_at": "timestamp"
+  },
+  "ORDER_ITEM": {
+    "id": "string",
+    "order_id": "string",
+    "product_id": "string",
+    "variant_id": "string",
+    "quantity": "integer",
+    "original_price": "float",
+    "discounted_price": "float",
+    "company_id": "string"
+  },
+
+  "PRODUCT": {
+    "id": "string",
+    "company_id": "string",
+    "category_id": "string",
+    "name": "string",
+    "description": "string",
+    "images": ["string"],
+    "base_price": "float",
+    "discounted_price": "float",
+    "is_active": "boolean",
+    "created_at": "timestamp",
+    "updated_at": "timestamp"
+  },
+  "PRODUCT_VARIANT": {
+    "product_id": "string",
+    "name": "string",
+    "images": ["string"],
+    "price": "float",
+    "stock": "integer",
+    "details": "json"
+  },
+  "CATEGORY": {
+    "id": "string",
+    "company_id": "string",
+    "name": "string",
+    "parent_id": "string",
+    "images": ["string"],
+    "level": "integer",
+    "is_active": "boolean"
+  },
+  "CART": {
+    "id": "string",
+    "user_id": "string",
+    "company_id": "string",
+    "created_at": "timestamp",
+    "updated_at": "timestamp",
+    "cart_items": {
+      "id": "string",
+      "cart_id": "string",
+      "product_id": "string",
+      "variant_id": "string",
+      "quantity": "integer"
+    }
+  }
+}
