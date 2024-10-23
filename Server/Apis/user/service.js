@@ -30,6 +30,13 @@ class UserService {
     return primaryResult;
   }
 
+  async getUserByPhone(phone) {
+    const primaryResult = await this.primaryUserRepo.getUserByPhone(phone);
+
+    return primaryResult;
+  }
+  
+
   async getAllUsers(query) {
     const primaryResult = await this.primaryUserRepo.getAllUsers(query);
 

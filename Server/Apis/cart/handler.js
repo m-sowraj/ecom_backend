@@ -12,7 +12,8 @@ class CartHandler {
 
   async getCartByUserId(req, res) {
     try {
-      const result = await cartService.getCartByUserId(req.params.userId);
+      let userId = req.user.user_id;
+      const result = await cartService.getCartByUserId(userId);
       res.status(200).json(result);
     } catch (error) {
       res.status(404).json({ message: error.message });
@@ -21,7 +22,19 @@ class CartHandler {
 
   async addItemToCart(req, res) {
     try {
-      const result = await cartService.addItemToCart(req.params.userId, req.body);
+      let userId = req.user.user_id;
+      const result = await cartService.addItemToCart(userId, req.body);
+      res.status(200).json(result);
+    } catch (error) {
+      res.status(404).json({ message: error.message });
+    }
+  }
+
+  async removeItemFromCart(req, res) {
+    try {
+      let userId = req.user.user_id;
+      let item = req.body.item_id;
+      const result = await cartService.removeItemFromCart(userId, item);
       res.status(200).json(result);
     } catch (error) {
       res.status(404).json({ message: error.message });

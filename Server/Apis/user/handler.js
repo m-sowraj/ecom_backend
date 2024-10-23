@@ -15,7 +15,7 @@ class UserHandler {
       const hashedPassword = await bcrypt.hash(password, 10); // 10 is the salt rounds
   
       // Create a new user with the hashed password
-      const result = await userService.createUser({ ...userData, hashed_password: hashedPassword });
+      const result = await userService.createUser({ ...userData, hashed_password: hashedPassword  });
       
       res.status(201).json(result);
     } catch (error) {
@@ -25,21 +25,21 @@ class UserHandler {
   
   async login(req, res) {
     try {
-      const { email, password } = req.body;
+      const { phone , otp} = req.body;
       
       // Fetch user from the database
-      const user = await userService.getUserByEmail(email); 
+      const user = await userService.getUserByPhone(phone);
   
       if (!user) {
         return res.status(401).json({ message: 'Invalid email or password' });
       }
   
-      // Verify the password
-      const isMatch = await bcrypt.compare(password, user.hashed_password); // Check hashed password
+      // // Verify the password
+      // const isMatch = await bcrypt.compare(password, user.hashed_password); // Check hashed password
   
-      if (!isMatch) {
-        return res.status(401).json({ message: 'Invalid email or password' });
-      }
+      // if (!isMatch) {
+      //   return res.status(401).json({ message: 'Invalid email or password' });
+      // }
   
       // Generate access and refresh tokens
       const accessToken = createToken(user.company_id, user.id, user.role);
@@ -55,6 +55,11 @@ class UserHandler {
         httpOnly: true, 
         secure: process.env.NODE_ENV === 'production', 
         maxAge: 604800000 // 7 days
+      });
+      res.cookie('user', user.role, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', 
+        maxAge: 3600000 // 1 hour
       });
   
       // Respond with user info (excluding sensitive data)

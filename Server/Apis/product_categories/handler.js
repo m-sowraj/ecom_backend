@@ -10,9 +10,12 @@ class CategoryHandler {
         res.status(401).json({ message: 'Unauthorized' });
       }
 
+      console.log(req.body)
+      console.log(req.user.company_id)
       const result = await categoryService.createCategory(req.body);
       res.status(201).json(result);
     } catch (error) {
+      console.log(error)
       res.status(500).json({ message: error.message });
     }
   }

@@ -6,28 +6,24 @@ class ProductRepository {
 
     static getCurrentISODate() {
         return new Date().toISOString();
-      }
+    }
+
     // Create a new product
     async createProduct(data) {
         // Set createdAt and updatedAt timestamps
         data.created_at = ProductRepository.getCurrentISODate();
         data.updated_at = ProductRepository.getCurrentISODate();
-    
-        // Create a batch for multiple operations
-        const batch = this.db.batch();
-    
+
         // Reference for the new product document
         const productRef = this.collection.doc(data.id); // Use data.id for document ID
-        batch.set(productRef, data); // Queue the set operation
-    
-        // Commit the batch
-        await batch.commit();
-    
+
+        // Set the document data
+        await productRef.set(data);
+
         // Return the created product data
         return { id: data.id, ...data };
     }
-    
-        
+
     // Get a product by ID
     async getProductById(id) {
         const docRef = this.collection.doc(id);
@@ -41,59 +37,71 @@ class ProductRepository {
 
     // Get all products by category ID with pagination
     async getAllProducts(query) {
+        let baseQuery = this.collection;
 
-            const limit = query.limit ? parseInt(query.limit) : 10; // Default limit
-            const page = query.page ? parseInt(query.page) : 1; // Default page
-            const ref = this.collection;
-        
-            // Create a base query
-            let baseQuery = ref.limit(limit);
-        
-            // Filter by name if provided
-            if (query.name) {
-                baseQuery = baseQuery.where('name', '==', query.name);
-            }
-
-            // Filter by category if provided
-            if (query.categoryId) {
-                baseQuery = baseQuery.where('categoryId', '==', query.categoryId);
-            }
-        
-            // Initialize an array for categories
-            const categories = [];
-            let snapshot;
-        
-            // Fetch documents for the current page
-            try {
-                snapshot = await baseQuery.get();
-                snapshot.forEach((doc) => {
-                    categories.push({ id: doc.id, ...doc.data() });
-                });
-            } catch (error) {
-                console.error("Error fetching Products:", error);
-                throw new Error('Error fetching Products');
-            }
-        
-            // Pagination details
-            const totalRecords = await this.getTotalRecords(query); // Function to count total records
-            const totalPages = Math.ceil(totalRecords / limit);
-            const currentPage = page;
-        
-            const pagination = { totalRecords, totalPages, currentPage, limit };
-        
-            return { categories, pagination };
+        // Filter by name if provided
+        if (query.name) {
+            baseQuery = baseQuery.where('name', '==', query.name);
         }
-        
+
+        // Filter by category if provided
+        if (query.categoryId) {
+            baseQuery = baseQuery.where('categoryId', '==', query.categoryId);
+        }
+
+        // Pagination
+        const page = query.page || 1;
+        const limit = query.limit || 10;
+
+        // Initialize an array for products
+        const products = [];
+        let snapshot;
+
+        // Fetch documents for the current page
+        try {
+            if (page > 1) {
+                // Get the last document from the previous page
+                const previousSnapshot = await baseQuery.limit((page - 1) * limit).get();
+                if (previousSnapshot.docs.length > 0) {
+                    const lastDoc = previousSnapshot.docs[previousSnapshot.docs.length - 1];
+                    baseQuery = baseQuery.startAfter(lastDoc);
+                }
+            }
+
+            snapshot = await baseQuery.limit(limit).get();
+            snapshot.forEach((doc) => {
+                products.push({ id: doc.id, ...doc.data() });
+                //fetch all vsrient
+                
+            });
+        } catch (error) {
+            console.error("Error fetching Products:", error);
+            throw new Error('Error fetching Products');
+        }
+
+        // Pagination details
+        const totalRecords = await this.getTotalProductsByCategory(query.categoryId);
+        const totalPages = Math.ceil(totalRecords / limit);
+        const currentPage = page;
+
+        const pagination = { totalRecords, totalPages, currentPage };
+
+        return { pagination , products};
+    }
 
     // Function to count total products by category
     async getTotalProductsByCategory(categoryId) {
+        if(!categoryId) {
+            const snapshot = await this.collection.get();
+            return snapshot.size; // Return the total number of records
+        }
         const snapshot = await this.collection.where('categoryId', '==', categoryId).get();
         return snapshot.size; // Return the total number of records
     }
 
     // Update a product by ID
     async updateProduct(id, data) {
-        data.updatedAt = new Date();
+        data.updated_at = ProductRepository.getCurrentISODate();
         const docRef = this.collection.doc(id);
         await docRef.update(data);
         const updatedProduct = await docRef.get();
@@ -107,7 +115,7 @@ class ProductRepository {
         return { id, message: 'Product deleted successfully' };
     }
 
-    //getCategoryById
+    // Get category by ID
     async getCategoryById(id) {
         const docRef = this.db.collection('categories').doc(id);
         const doc = await docRef.get();

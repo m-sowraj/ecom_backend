@@ -22,7 +22,14 @@ class CartService {
   }
 
   async addItemToCart(userId, item) {
+    item.id = uuidv4();
     const primaryResult = await this.primaryCartRepo.addItemToCart(userId, item);
+    return primaryResult;
+    // return { primary: primaryResult, secondary: secondaryResult };
+  }
+
+  async removeItemFromCart(userId, itemId) {
+    const primaryResult = await this.primaryCartRepo.removeItemFromCart(userId, itemId);
     return primaryResult;
     // return { primary: primaryResult, secondary: secondaryResult };
   }

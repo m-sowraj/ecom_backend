@@ -34,6 +34,19 @@ class UserRepository {
       });
       return user;
     }
+
+    //get user by phone
+    async getUserByPhone(phone) {
+      const snapshot = await this.collection.where('phone', '==', phone).get();
+      if (snapshot.empty) {
+        return null;
+      }
+      let user = null;
+      snapshot.forEach(doc => {
+        user = { id: doc.id, ...doc.data() };
+      });
+      return user;
+    }
   
     async getUserById(id) {
       const docRef = this.collection.doc(id);

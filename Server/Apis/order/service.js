@@ -58,6 +58,14 @@ class OrderService {
     return primaryResult;
 
   }
+
+  async createOrderItem(data) {
+    data.id = uuidv4();
+    const primaryResult = await this.primaryOrderRepo.createOrderItem(data);
+
+    return primaryResult;
+
+  }
 }
 
 module.exports = new OrderService();

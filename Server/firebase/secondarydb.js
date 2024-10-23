@@ -3,15 +3,14 @@ require('firebase/compat/firestore');
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyC8NBV8SAz1zR7JTkgdiZ5xfwtrPc-0sYA",
-    authDomain: "kioskbillbuddy.firebaseapp.com",
-    databaseURL: "https://kioskbillbuddy-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "kioskbillbuddy",
-    storageBucket: "kioskbillbuddy.appspot.com",
-    messagingSenderId: "282967025495",
-    appId: "1:282967025495:web:7c91b451831ee4bc974012",
-    measurementId: "G-XPFDE6ZBLF"
-};
+    apiKey: "AIzaSyD_rnXd3BtoJ1drSBgUkqkc8zR6hkrLp6Y",
+    authDomain: "globechemicalsllc.firebaseapp.com",
+    projectId: "globechemicalsllc",
+    storageBucket: "globechemicalsllc.appspot.com",
+    messagingSenderId: "529379158041",
+    appId: "1:529379158041:web:89c52dbe451248725c2288",
+    measurementId: "G-Q0VYX5JVD0"
+  };
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
