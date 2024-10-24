@@ -49,7 +49,7 @@ class UserHandler {
       res.cookie('token', accessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production', 
-        maxAge: 3600000 // 1 hour
+        maxAge: 604800000 // 1 hour
       });
       res.cookie('refreshToken', refreshToken, {
         httpOnly: true, 
@@ -59,7 +59,7 @@ class UserHandler {
       res.cookie('user', user.role, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production', 
-        maxAge: 3600000 // 1 hour
+        maxAge: 604800000 // 1 hour
       });
   
       // Respond with user info (excluding sensitive data)
@@ -93,6 +93,22 @@ class UserHandler {
     }
   }
 
+  async getUser(req, res) {
+    try {
+
+      console.log("hi")
+      console.log(req.user)
+
+      const { user_id } = req.user;
+      // console.log("-----------",req.user.user_id)
+      const result = await userService.getUserById(user_id);
+      res.status(200).json(result);
+    } catch (error) {
+      res.status(404).json({ message: error.message });
+    }
+  }
+
+
   async getAllUsers(req, res) {
     try {
       const query = {
@@ -116,6 +132,16 @@ class UserHandler {
   async updateUser(req, res) {
     try {
       const result = await userService.updateUser(req.params.id, req.body);
+      res.status(200).json(result);
+    } catch (error) {
+      res.status(404).json({ message: error.message });
+    }
+  }
+
+  async updateUserbydata(req, res) {
+    try {
+      const { user_id } = req.user;
+      const result = await userService.updateUser(user_id,req.body);
       res.status(200).json(result);
     } catch (error) {
       res.status(404).json({ message: error.message });

@@ -13,7 +13,7 @@ function createToken(companyId, userId, userRole) {
     };
 
     const options = {
-        expiresIn: '1h'
+        expiresIn: '7d'
     };
 
     return jwt.sign(payload, JWT_SECRET, options);
