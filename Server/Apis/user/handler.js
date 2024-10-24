@@ -48,18 +48,21 @@ class UserHandler {
       // Set tokens in cookies
       res.cookie('token', accessToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', 
-        maxAge: 604800000 // 1 hour
+        secure: true,
+        maxAge: 604800000 ,
+        sameSite: 'None'
       });
       res.cookie('refreshToken', refreshToken, {
         httpOnly: true, 
-        secure: process.env.NODE_ENV === 'production', 
-        maxAge: 604800000 // 7 days
+        secure: true, 
+        maxAge: 604800000,
+        sameSite: 'None'
       });
       res.cookie('user', user.role, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', 
-        maxAge: 604800000 // 1 hour
+        secure: true,
+        maxAge: 604800000 ,
+         sameSite: 'None'
       });
   
       // Respond with user info (excluding sensitive data)

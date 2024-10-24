@@ -51,7 +51,7 @@ function authorize(req, res, next) {
 
                     
                     const newToken = createToken(refreshDecoded.company_id, refreshDecoded.user_id, refreshDecoded.user_role);
-                    res.cookie('token', newToken, { httpOnly: true, maxAge: 3600000 }); // Set new token in cookie
+                    res.cookie('token', newToken, { httpOnly: true, maxAge: 3600000 , secure: true,  sameSite: 'None'}); // Set new token in cookie
 
                     
                     req.user = refreshDecoded;
