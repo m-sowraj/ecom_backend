@@ -8,5 +8,6 @@ router.get('/orders/:id', orderHandler.getOrderById);
 router.get('/orders', orderHandler.getAllOrders);
 router.put('/orders/:id', orderHandler.updateOrder);
 router.delete('/orders/:id', orderHandler.deleteOrder);
+router.post("/verifyPayment", orderHandler.verifyPayment);
 
 module.exports = router;

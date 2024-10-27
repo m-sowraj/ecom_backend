@@ -1,7 +1,7 @@
 const OrderRepository = require('../../repos/orders');
 const { primaryDbConnection } = require('../../firebase/primarydb');
 const { secondaryDbConnection } = require('../../firebase/secondarydb');
-
+const RazorpayService = require("./razorpay");
 const { v4: uuidv4 } = require('uuid');
 const OrderItemsRepository = require('../../repos/ordersItems');
 const ProductVarientRepository = require('../../repos/ProductVarients');
@@ -14,21 +14,47 @@ class OrderService {
     this.secondaryProductRepo = new ProductVarientRepository(secondaryDbConnection);
   }
 
+  // async createOrder(data) {
+  //   data.id = uuidv4();
+  //   const { order_items , ...orderData } = data;
+  //   const primaryResult = await this.primaryOrderRepo.createOrder(orderData);
+  //   if(order_items){
+  //     order_items.forEach(async item => {
+  //       item.order_id = data.id;
+  //       await this.primaryOrderItemsRepo.createOrder(item);
+  //       const product = await this.primaryProductRepo.getProductVarientById(item.product_id);
+  //       await this.primaryProductRepo.updateProductVarient(item.product_varient_id, {stock: product.stock - item.quantity});
+  //       await this.secondaryProductRepo.updateProductVarient(item.product_varient_id, {stock: product.stock - item.quantity});
+  //     });
+  //   }
+  //   return primaryResult;
+
+  // }
+
   async createOrder(data) {
     data.id = uuidv4();
-    const { order_items , ...orderData } = data;
+    const { order_items, amount, ...orderData } = data;
+
+    // Create an order record in the database
     const primaryResult = await this.primaryOrderRepo.createOrder(orderData);
-    if(order_items){
-      order_items.forEach(async item => {
+
+    // Initiate payment with Razorpay
+    const razorpayOrder = await RazorpayService.createPaymentOrder(amount, data.id);
+
+    if (order_items) {
+      for (const item of order_items) {
         item.order_id = data.id;
         await this.primaryOrderItemsRepo.createOrder(item);
         const product = await this.primaryProductRepo.getProductVarientById(item.product_id);
-        await this.primaryProductRepo.updateProductVarient(item.product_varient_id, {stock: product.stock - item.quantity});
-        await this.secondaryProductRepo.updateProductVarient(item.product_varient_id, {stock: product.stock - item.quantity});
-      });
-    }
-    return primaryResult;
+        const updatedStock = product.stock - item.quantity;
 
+        // Update stock in both primary and secondary databases
+        await this.primaryProductRepo.updateProductVarient(item.product_varient_id, { stock: updatedStock });
+        await this.secondaryProductRepo.updateProductVarient(item.product_varient_id, { stock: updatedStock });
+      }
+    }
+
+    return { primaryResult, razorpayOrder };  
   }
 
   async getOrderById(id) {

@@ -1,5 +1,5 @@
 const orderService = require('./service'); // Adjust path as needed
-
+const RazorpayService = require("./razorpay");
 class OrderHandler {
   async createOrder(req, res) {
     try {
@@ -65,6 +65,20 @@ class OrderHandler {
       res.status(500).json({ message: error.message });
     }
   }
+
+  async verifyPayment(req, res) {
+      const { order_id, payment_id, razorpay_signature } = req.body;
+      
+      const isValid = RazorpayService.verifyPaymentSignature({ order_id, payment_id, signature: razorpay_signature });
+    
+      if (isValid) {
+        res.json({ status: "success", message: "Payment verified successfully" });
+      } else {
+        res.status(400).json({ status: "failure", message: "Payment verification failed" });
+      }
+    }
+
+  
 }
 
 
