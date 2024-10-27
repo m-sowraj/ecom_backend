@@ -11,6 +11,9 @@ class RazorpayService {
 
   async createPaymentOrder(amount, receiptId) {
     try {
+
+      console.log("anmount", amount);
+      console.log("receiptId", receiptId);
       const options = {
         amount: amount * 100, 
         currency: "INR",
@@ -25,7 +28,7 @@ class RazorpayService {
 
   verifyPaymentSignature({ order_id, payment_id, signature }) {
     const generatedSignature = crypto
-      .createHmac("sha256", process.env.KEY_SECRET)
+      .createHmac("sha256", "2NxPnFX6Rvq6Ryd9TXv9Xsqz")
       .update(order_id + "|" + payment_id)
       .digest("hex");
 

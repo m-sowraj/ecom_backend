@@ -33,13 +33,13 @@ class OrderService {
 
   async createOrder(data) {
     data.id = uuidv4();
-    const { order_items, amount, ...orderData } = data;
+    const { order_items, total_amount, ...orderData } = data;
 
     // Create an order record in the database
     const primaryResult = await this.primaryOrderRepo.createOrder(orderData);
 
     // Initiate payment with Razorpay
-    const razorpayOrder = await RazorpayService.createPaymentOrder(amount, data.id);
+    const razorpayOrder = await RazorpayService.createPaymentOrder(total_amount, data.id);
 
     if (order_items) {
       for (const item of order_items) {
