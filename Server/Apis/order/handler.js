@@ -67,13 +67,15 @@ class OrderHandler {
   }
 
   async verifyPayment(req, res) {
-      const { order_id, payment_id, razorpay_signature } = req.body;
+      const { order_id, payment_id, razorpay_signature , DB_order_id } = req.body;
       
       const isValid = RazorpayService.verifyPaymentSignature({ order_id, payment_id, signature: razorpay_signature });
-    
       if (isValid) {
+        //update order
+        await orderService.updateOrder(DB_order_id, { status: "paid" });
         res.json({ status: "success", message: "Payment verified successfully" });
       } else {
+        await orderService.updateOrder(order_id, { status: "failed" });
         res.status(400).json({ status: "failure", message: "Payment verification failed" });
       }
     }
