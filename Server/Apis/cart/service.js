@@ -45,6 +45,11 @@ class CartService {
     return primaryResult;
     // return { primary: primaryResult, secondary: secondaryResult };
   }
+
+  async getItemCount(userId) {
+    const primaryResult = await this.primaryCartRepo.getItemCount(userId);
+    return primaryResult;
+  }
 }
 
 module.exports = new CartService();

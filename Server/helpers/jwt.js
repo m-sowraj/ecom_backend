@@ -69,8 +69,49 @@ function authorize(req, res, next) {
     });
 }
 
+//soft auth
+function softAuthorize(req, res, next) {
+    const token = req.cookies.token; 
+    const refreshToken = req.cookies.refreshToken;
+
+   
+
+    if (!token) {
+       next();
+    }
+
+    jwt.verify(token, JWT_SECRET, (err, decoded) => {
+        if (err) {
+            
+            if (err.name === 'TokenExpiredError' && refreshToken) {
+                jwt.verify(refreshToken, JWT_REFRESH_SECRET, (refreshErr, refreshDecoded) => {
+                    if (refreshErr) {
+                        next();
+                    }
+
+                    
+                    const newToken = createToken(refreshDecoded.company_id, refreshDecoded.user_id, refreshDecoded.user_role);
+                    res.cookie('token', newToken, { httpOnly: true, maxAge: 3600000 , secure: true,  sameSite: 'None'}); // Set new token in cookie
+
+                    
+                    req.user = refreshDecoded;
+                    next();
+                });
+            } else {
+                next();
+            }
+        } else {
+            
+            req.user = decoded;
+            console.log(req.user)
+            next();
+        }
+    });
+}
+
 module.exports = {
     createToken,
     createRefreshToken,
-    authorize
+    authorize,
+    softAuthorize
 };

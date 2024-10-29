@@ -58,6 +58,23 @@ class CartHandler {
       res.status(404).json({ message: error.message });
     }
   }
+
+  async getItemCount(req, res) {
+    try {
+
+      if(!req.user){
+        return res.status(200).json({item_count: 0});
+      }
+
+      
+      const result = await cartService.getItemCount(req.user.user_id);
+      res.status(200).json({item_count: result});
+    } catch (error) {
+      res.status(404).json({ message: error.message });
+    }
+  }
+
+
 }
 
 module.exports = new CartHandler();

@@ -23,13 +23,13 @@ app.use(cookieParser());
 
 
 app.use('/api/ecom/v1', userRouter);
+app.use('/api/ecom/v1', cartRouter);
 app.use('/api/ecom/v1', authorize , companyRouter);
 app.use('/api/ecom/v1', authorize, categoryRouter);
 app.use('/api/ecom/v1', authorize, productRouter);
 app.use('/api/ecom/v1', authorize, productVarientRouter);
 app.use('/api/ecom/v1', authorize, orderRouter);
 // app.use('/api/ecom/v1', authorize, orderItemsRouter);
-app.use('/api/ecom/v1', authorize, cartRouter);
 
 app.use((err, req, res, next) => {
   //error format
