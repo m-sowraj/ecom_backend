@@ -109,6 +109,12 @@ class CartRepository {
     const cart = await this.getCartByUserId(userId);
     return cart.cart_items.length;
   }
+
+  async updateCart(userId, updatedItems) {
+    const updated_at = CartRepository.getCurrentISODate();
+    await this.collection.doc(userId).update({ cart_items: updatedItems, updated_at });
+    return { userId, cart_items: updatedItems };
+  }
 }
 
 module.exports = CartRepository;

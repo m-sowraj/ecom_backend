@@ -43,7 +43,7 @@ class CartHandler {
 
   async updateCart(req, res) {
     try {
-      const result = await cartService.updateCart(req.params.userId, req.body.items);
+      const result = await cartService.updateCart(req.user.user_id, req.body.items);
       res.status(200).json(result);
     } catch (error) {
       res.status(404).json({ message: error.message });
