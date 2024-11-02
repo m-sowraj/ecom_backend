@@ -28,7 +28,7 @@ class RazorpayService {
 
   verifyPaymentSignature({ order_id, payment_id, signature }) {
     const generatedSignature = crypto
-      .createHmac("sha256", "2NxPnFX6Rvq6Ryd9TXv9Xsqz")
+      .createHmac("sha256", "NEI0BRFsHp30NQXUkdnIAUFj")
       .update(order_id + "|" + payment_id)
       .digest("hex");
 

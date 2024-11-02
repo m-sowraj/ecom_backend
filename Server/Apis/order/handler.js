@@ -75,7 +75,7 @@ class OrderHandler {
         await orderService.updateOrder(DB_order_id, { status: "paid" });
         res.json({ status: "success", message: "Payment verified successfully" });
       } else {
-        await orderService.updateOrder(order_id, { status: "failed" });
+        await orderService.updateOrder(DB_order_id, { status: "failed" });
         res.status(400).json({ status: "failure", message: "Payment verification failed" });
       }
     }
