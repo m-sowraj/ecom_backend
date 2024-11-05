@@ -3,7 +3,8 @@ const RazorpayService = require("./razorpay");
 class OrderHandler {
   async createOrder(req, res) {
     try {
-      const result = await orderService.createOrder(req.body);
+    
+      const result = await orderService.createOrder({...req.body , user_id: req.user.id , company_id: req.user.company_id});
       
       res.status(201).json(result);
     } catch (error) {
