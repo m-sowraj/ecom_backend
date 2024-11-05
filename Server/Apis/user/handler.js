@@ -66,7 +66,7 @@ class UserHandler {
       });
   
       // Respond with user info (excluding sensitive data)
-      res.status(200).json({ message: 'Login successful', user: { id: user.id, role: user.role } });
+      res.status(200).json({ message: 'Login successful', user: { id: user.id, role: user.role }  , name: user.name });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
