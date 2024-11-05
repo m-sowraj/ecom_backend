@@ -44,6 +44,11 @@ class ProductRepository {
             baseQuery = baseQuery.where('name', '==', query.name);
         }
 
+        // Filter by company_id if provided
+        if (query.company_id) {
+            baseQuery = baseQuery.where('company_id', '==', query.company_id);
+        }
+
         // Filter by category if provided
         if (query.categoryId) {
             baseQuery = baseQuery.where('categoryId', '==', query.categoryId);

@@ -15,7 +15,7 @@ class UserHandler {
       const hashedPassword = await bcrypt.hash(password, 10); // 10 is the salt rounds
   
       // Create a new user with the hashed password
-      const result = await userService.createUser({ ...userData, hashed_password: hashedPassword  });
+      const result = await userService.createUser({ ...userData, hashed_password: hashedPassword , company_id: req.user.company_id});
       
       res.status(201).json(result);
     } catch (error) {
@@ -117,12 +117,14 @@ class UserHandler {
       const query = {
         page: req.query.page ? parseInt(req.query.page) : 1,
         limit: req.query.limit ? parseInt(req.query.limit) : 10,
+        company_id: req.user.company_id,
       };
 
       //company id fileter baed on token
       if(req.user.user_role == 'admin'){
         query.company_id = req.user.company_id;
       }
+      
 
 
       const result = await userService.getAllUsers(query);

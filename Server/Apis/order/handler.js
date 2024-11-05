@@ -30,7 +30,8 @@ class OrderHandler {
         status: req.query.status,
         startDate: req.query.startDate,
         endDate: req.query.endDate,
-      };
+        company_id: req.user.company_id,
+      };  
 
       const result = await orderService.getAllOrders(query);
       res.status(200).json(result);

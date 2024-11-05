@@ -69,6 +69,9 @@ class OrderRepository {
       ref = ref.where('createdAt', '>=', new Date(query.startDate))
                .where('createdAt', '<=', new Date(query.endDate));
     }
+    if (query.company_id) {
+      ref = ref.where('company_id', '==', query.company_id);
+    }
 
     // Fetch the first page
     if (page === 1) {
@@ -85,6 +88,9 @@ class OrderRepository {
       if (query.startDate && query.endDate) {
         previousPageQuery = previousPageQuery.where('createdAt', '>=', new Date(query.startDate))
                                              .where('createdAt', '<=', new Date(query.endDate));
+      }
+      if (query.company_id) {
+        previousPageQuery = previousPageQuery.where('company_id', '==', query.company_id);
       }
       const previousPageSnapshot = await previousPageQuery.limit((page - 1) * limit).get();
       const lastVisible = previousPageSnapshot.docs[previousPageSnapshot.docs.length - 1];

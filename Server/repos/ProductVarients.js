@@ -49,6 +49,10 @@ class ProductvarientRepository {
             baseQuery = baseQuery.where('product_id', '==', query.product_id);
         }
 
+        if (query.company_id){
+            baseQuery = baseQuery.where('company_id', '==', query.company_id);
+        }
+
         // Pagination
         const page = query.page || 1;
         const limit = query.limit || 10;

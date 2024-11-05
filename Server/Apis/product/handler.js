@@ -14,7 +14,7 @@ class ProductHandler {
 
       data.company_id = req.user.company_id;
     
-      const result = await productService.createProduct(data);
+      const result = await productService.createProduct({...data , user_id: req.user.id , company_id: req.user.company_id});
       res.status(201).json(result);
     } catch (error) {
       res.status(500).json({ message: error.message });
@@ -36,6 +36,7 @@ class ProductHandler {
       const query = {
         page: req.query.page ? parseInt(req.query.page) : 1,
         limit: req.query.limit ? parseInt(req.query.limit) : 10,
+        company_id: req.user.company_id,
       };
 
       //category filter

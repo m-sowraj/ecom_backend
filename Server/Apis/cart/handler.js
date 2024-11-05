@@ -3,7 +3,7 @@ const cartService = require('./service'); // Adjust path as needed
 class CartHandler {
   async createCart(req, res) {
     try {
-      const result = await cartService.createCart(req.body);
+      const result = await cartService.createCart({...req.body , user_id: req.user.id , company_id: req.user.company_id});
       res.status(201).json(result);
     } catch (error) {
       res.status(500).json({ message: error.message });
