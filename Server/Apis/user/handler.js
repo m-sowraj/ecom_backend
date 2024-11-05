@@ -15,7 +15,7 @@ class UserHandler {
       const hashedPassword = await bcrypt.hash(password, 10); // 10 is the salt rounds
   
       // Create a new user with the hashed password
-      const result = await userService.createUser({ ...userData, hashed_password: hashedPassword , company_id: req.user.company_id});
+      const result = await userService.createUser({ ...userData, hashed_password: hashedPassword });
       
       res.status(201).json(result);
     } catch (error) {
