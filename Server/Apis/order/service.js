@@ -45,12 +45,6 @@ class OrderService {
       for (const item of order_items) {
         item.order_id = data.id;
         await this.primaryOrderItemsRepo.createOrder(item);
-        const product = await this.primaryProductRepo.getProductVarientById(item.product_id);
-        const updatedStock = product.stock - item.quantity;
-
-        // Update stock in both primary and secondary databases
-        await this.primaryProductRepo.updateProductVarient(item.product_varient_id, { stock: updatedStock });
-        await this.secondaryProductRepo.updateProductVarient(item.product_varient_id, { stock: updatedStock });
       }
     }
 
