@@ -13,6 +13,18 @@ class UserHandler {
   
       // Hash the password
       const hashedPassword = await bcrypt.hash(password, 10); // 10 is the salt rounds
+
+      //check if user already exists
+      const existingUser = await userService.getUserByPhone(userData.phone);
+      if (existingUser) {
+        return res.status(400).json({ message: 'User already exists' });
+      }
+
+      //check if email already exists
+      const existingEmail = await userService.getUserByEmail(userData.email);
+      if (existingEmail) {
+        return res.status(400).json({ message: 'Email already exists' });
+      }
   
       // Create a new user with the hashed password
       const result = await userService.createUser({ ...userData, hashed_password: hashedPassword });
