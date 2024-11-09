@@ -12,7 +12,6 @@ class ProductService {
   async createProduct(data) {
     data.id = uuidv4(); // Generate a unique ID for the product
     const primaryResult = await this.primaryProductRepo.createProduct(data);
-    const secondaryResult = await this.secondaryProductRepo.createProduct(data);
     
     return { primary: primaryResult, secondary: secondaryResult };
   }

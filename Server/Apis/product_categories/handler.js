@@ -12,7 +12,7 @@ class CategoryHandler {
 
       console.log(req.body)
       console.log(req.user.company_id)
-      const result = await categoryService.createCategory({...req.body , user_id: req.user.id , company_id: req.user.company_id});
+      const result = await categoryService.createCategory({...req.body , user_id: req.user.user_id , company_id: req.user.company_id});
       res.status(201).json(result);
     } catch (error) {
       console.log(error)
