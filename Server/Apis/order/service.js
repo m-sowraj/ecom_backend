@@ -36,7 +36,7 @@ class OrderService {
     const { order_items, total_amount, ...orderData } = data;
 
     // Create an order record in the database
-    const primaryResult = await this.primaryOrderRepo.createOrder(orderData);
+    const primaryResult = await this.primaryOrderRepo.createOrder({...orderData, total_amount});
 
     // Initiate payment with Razorpay
     const razorpayOrder = await RazorpayService.createPaymentOrder(total_amount, data.id);
