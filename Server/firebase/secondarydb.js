@@ -3,14 +3,14 @@ require('firebase/compat/firestore');
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyD_rnXd3BtoJ1drSBgUkqkc8zR6hkrLp6Y",
-    authDomain: "globechemicalsllc.firebaseapp.com",
-    projectId: "globechemicalsllc",
-    storageBucket: "globechemicalsllc.appspot.com",
-    messagingSenderId: "529379158041",
-    appId: "1:529379158041:web:89c52dbe451248725c2288",
-    measurementId: "G-Q0VYX5JVD0"
-  };
+  apiKey: "AIzaSyA5CF5YC7K8wnygKyg8H2BQUlJmY1Cqo0Y",
+  authDomain: "website-sowrajm.firebaseapp.com",
+  projectId: "website-sowrajm",
+  storageBucket: "website-sowrajm.firebasestorage.app",
+  messagingSenderId: "514442393360",
+  appId: "1:514442393360:web:70416af1f1f59bf0c5d795",
+  measurementId: "G-PD2ELW3RLK"
+};
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
