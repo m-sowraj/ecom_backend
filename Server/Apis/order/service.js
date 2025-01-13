@@ -1,6 +1,5 @@
 const OrderRepository = require('../../repos/orders');
-const { primaryDbConnection } = require('../../firebase/primarydb');
-const { secondaryDbConnection } = require('../../firebase/secondarydb');
+const { getDbConnection } = require('../../firebase/dbConfig');
 const RazorpayService = require("./razorpay");
 const { v4: uuidv4 } = require('uuid');
 const OrderItemsRepository = require('../../repos/ordersItems');
@@ -8,83 +7,69 @@ const ProductVarientRepository = require('../../repos/ProductVarients');
 
 class OrderService {
   constructor() {
-    this.primaryOrderRepo = new OrderRepository(primaryDbConnection);
-    this.primaryOrderItemsRepo = new OrderItemsRepository(primaryDbConnection);
-    this.primaryProductRepo = new ProductVarientRepository(primaryDbConnection);
-    this.secondaryProductRepo = new ProductVarientRepository(secondaryDbConnection);
+    this.orderRepo = null;
+    this.orderItemsRepo = null;
+    this.productRepo = null;
   }
 
-  // async createOrder(data) {
-  //   data.id = uuidv4();
-  //   const { order_items , ...orderData } = data;
-  //   const primaryResult = await this.primaryOrderRepo.createOrder(orderData);
-  //   if(order_items){
-  //     order_items.forEach(async item => {
-  //       item.order_id = data.id;
-  //       await this.primaryOrderItemsRepo.createOrder(item);
-  //       const product = await this.primaryProductRepo.getProductVarientById(item.product_id);
-  //       await this.primaryProductRepo.updateProductVarient(item.product_varient_id, {stock: product.stock - item.quantity});
-  //       await this.secondaryProductRepo.updateProductVarient(item.product_varient_id, {stock: product.stock - item.quantity});
-  //     });
-  //   }
-  //   return primaryResult;
-
-  // }
+  // Initialize repositories with correct database connection
+  initializeRepo(companyId) {
+    const dbConnection = getDbConnection(companyId);
+    this.orderRepo = new OrderRepository(dbConnection);
+    this.orderItemsRepo = new OrderItemsRepository(dbConnection);
+    this.productRepo = new ProductVarientRepository(dbConnection);
+  }
 
   async createOrder(data) {
+    this.initializeRepo(data.company_id);
     data.id = uuidv4();
     const { order_items, total_amount, ...orderData } = data;
 
     // Create an order record in the database
-    const primaryResult = await this.primaryOrderRepo.createOrder({...orderData, total_amount});
+    const primaryResult = await this.orderRepo.createOrder({...orderData, total_amount});
 
     // Initiate payment with Razorpay
-    const razorpayOrder = await RazorpayService.createPaymentOrder(total_amount, data.id);
+    const razorpayOrder = await RazorpayService.createPaymentOrder(total_amount, data.id, data.company_id);
 
     if (order_items) {
       for (const item of order_items) {
         item.order_id = data.id;
-        await this.primaryOrderItemsRepo.createOrder(item);
+        await this.orderItemsRepo.createOrder(item);
       }
     }
 
     return { primaryResult, razorpayOrder };  
   }
 
-  async getOrderById(id) {
-    const primaryResult = await this.primaryOrderRepo.getOrderById(id);
- 
-    return primaryResult;
-
+  async getOrderById(id, companyId) {
+    this.initializeRepo(companyId);
+    const result = await this.orderRepo.getOrderById(id);
+    return result;
   }
 
   async getAllOrders(query) {
-    const primaryResult = await this.primaryOrderRepo.getAllOrders(query);
-  
-    return primaryResult;
-
+    this.initializeRepo(query.company_id);
+    const result = await this.orderRepo.getAllOrders(query);
+    return result;
   }
 
-  async updateOrder(id, data) {
-    const primaryResult = await this.primaryOrderRepo.updateOrder(id, data);
-
-    return primaryResult;
-
+  async updateOrder(id, data, companyId) {
+    this.initializeRepo(companyId);
+    const result = await this.orderRepo.updateOrder(id, data);
+    return result;
   }
 
-  async deleteOrder(id) {
-    const primaryResult = await this.primaryOrderRepo.deleteOrder(id);
-
-    return primaryResult;
-
+  async deleteOrder(id, companyId) {
+    this.initializeRepo(companyId);
+    const result = await this.orderRepo.deleteOrder(id);
+    return result;
   }
 
   async createOrderItem(data) {
+    this.initializeRepo(data.company_id);
     data.id = uuidv4();
-    const primaryResult = await this.primaryOrderRepo.createOrderItem(data);
-
-    return primaryResult;
-
+    const result = await this.orderRepo.createOrderItem(data);
+    return result;
   }
 }
 

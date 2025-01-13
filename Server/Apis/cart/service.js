@@ -1,54 +1,60 @@
-const CartRepository = require('../../repos/cart'); // Adjust path as needed
-const { primaryDbConnection } = require('../../firebase/primarydb');
-const { secondaryDbConnection } = require('../../firebase/secondarydb');
+const CartRepository = require('../../repos/cart');
+const { getDbConnection } = require('../../firebase/dbConfig');
 const { v4: uuidv4 } = require('uuid');
-
 
 class CartService {
   constructor() {
-    this.primaryCartRepo = new CartRepository(primaryDbConnection);
-    this.secondaryCartRepo = new CartRepository(secondaryDbConnection);
+    this.cartRepo = null;
+  }
+
+  // Initialize repository with correct database connection
+  initializeRepo(companyId) {
+    const dbConnection = getDbConnection(companyId);
+    this.cartRepo = new CartRepository(dbConnection);
   }
 
   async createCart(data) {
+    this.initializeRepo(data.company_id);
     data.id = uuidv4();
-    const primaryResult = await this.primaryCartRepo.createCart(data);
-    return primaryResult;
+    const result = await this.cartRepo.createCart(data);
+    return result;
   }
 
-  async getCartByUserId(userId) {
-    const primaryResult = await this.primaryCartRepo.getCartByUserId(userId);
-    return primaryResult;
+  async getCartByUserId(userId, companyId) {
+    this.initializeRepo(companyId);
+    const result = await this.cartRepo.getCartByUserId(userId);
+    return result;
   }
 
-  async addItemToCart(userId, item) {
+  async addItemToCart(userId, item, companyId) {
+    this.initializeRepo(companyId);
     item.id = uuidv4();
-    const primaryResult = await this.primaryCartRepo.addItemToCart(userId, item);
-    return primaryResult;
-    // return { primary: primaryResult, secondary: secondaryResult };
+    const result = await this.cartRepo.addItemToCart(userId, item);
+    return result;
   }
 
-  async removeItemFromCart(userId, itemId) {
-    const primaryResult = await this.primaryCartRepo.removeItemFromCart(userId, itemId);
-    return primaryResult;
-    // return { primary: primaryResult, secondary: secondaryResult };
+  async removeItemFromCart(userId, itemId, companyId) {
+    this.initializeRepo(companyId);
+    const result = await this.cartRepo.removeItemFromCart(userId, itemId);
+    return result;
   }
 
-  async updateCart(userId, updatedItems) {
-    const primaryResult = await this.primaryCartRepo.updateCart(userId, updatedItems);
-    return primaryResult;
-    // return { primary: primaryResult, secondary: secondaryResult };
+  async updateCart(userId, updatedItems, companyId) {
+    this.initializeRepo(companyId);
+    const result = await this.cartRepo.updateCart(userId, updatedItems);
+    return result;
   }
 
-  async deleteCart(userId) {
-    const primaryResult = await this.primaryCartRepo.deleteCart(userId);
-    return primaryResult;
-    // return { primary: primaryResult, secondary: secondaryResult };
+  async deleteCart(userId, companyId) {
+    this.initializeRepo(companyId);
+    const result = await this.cartRepo.deleteCart(userId);
+    return result;
   }
 
-  async getItemCount(userId) {
-    const primaryResult = await this.primaryCartRepo.getItemCount(userId);
-    return primaryResult;
+  async getItemCount(userId, companyId) {
+    this.initializeRepo(companyId);
+    const result = await this.cartRepo.getItemCount(userId);
+    return result;
   }
 }
 

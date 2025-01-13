@@ -1,57 +1,55 @@
 const CategoryRepository = require('../../repos/product_category');
-const { primaryDbConnection} = require('../../firebase/primarydb');
-const { secondaryDbConnection } = require('../../firebase/secondarydb');
+const { getDbConnection } = require('../../firebase/dbConfig');
 const { v4: uuidv4 } = require('uuid');
 
 class CategoryService {
   constructor() {
-    this.primaryCategoryRepo = new CategoryRepository(primaryDbConnection);
-    this.secondaryCategoryRepo = new CategoryRepository(secondaryDbConnection);
+    this.categoryRepo = null;
+  }
+
+  // Initialize repository with correct database connection
+  initializeRepo(companyId) {
+    const dbConnection = getDbConnection(companyId);
+    this.categoryRepo = new CategoryRepository(dbConnection);
   }
 
   async createCategory(data) {
+    this.initializeRepo(data.company_id);
     data.id = uuidv4();
-    // Call both primary and secondary DBs
-    const primaryResult = await this.primaryCategoryRepo.createCategory(data);
-    const secondaryResult = await this.secondaryCategoryRepo.createCategory(data);
-    
-    return { primary: primaryResult, secondary: secondaryResult };
+    const result = await this.categoryRepo.createCategory(data);
+    return result;
   }
 
-  async getCategoryById(id) {
-    const primaryResult = await this.primaryCategoryRepo.getCategoryById(id);
-    return primaryResult;
-
+  async getCategoryById(id, companyId) {
+    this.initializeRepo(companyId);
+    const result = await this.categoryRepo.getCategoryById(id);
+    return result;
   }
 
   //list
   async getAllCategories(query) {
-    const primaryResult = await this.primaryCategoryRepo.getAllCategories(query);
-    return primaryResult;
-
+    this.initializeRepo(query.company_id);
+    const result = await this.categoryRepo.getAllCategories(query);
+    return result;
   }
 
-  async updateCategory(id, data) {
-    const primaryResult = await this.primaryCategoryRepo.updateCategory(id, data);
-    const secondaryResult = await this.secondaryCategoryRepo.updateCategory(id, data);
-    
-    return { primary: primaryResult, secondary: secondaryResult };
+  async updateCategory(id, data, companyId) {
+    this.initializeRepo(companyId);
+    const result = await this.categoryRepo.updateCategory(id, data);
+    return result;
   }
 
   //update is_category_active field in product
-  async updateProductCategory(id, isActive) {
-    console.log("object" , id, isActive)
-    const primaryResult = await this.primaryCategoryRepo.updateProductCategory(id, isActive);
-    const secondaryResult = await this.secondaryCategoryRepo.updateProductCategory(id, isActive);
-    
-    return { primary: primaryResult, secondary: secondaryResult };
+  async updateProductCategory(id, isActive, companyId) {
+    this.initializeRepo(companyId);
+    const result = await this.categoryRepo.updateProductCategory(id, isActive);
+    return result;
   }
 
-  async deleteCategory(id) {
-    const primaryResult = await this.primaryCategoryRepo.deleteCategory(id);
-    const secondaryResult = await this.secondaryCategoryRepo.deleteCategory(id);
-
-    return { primary: primaryResult, secondary: secondaryResult };
+  async deleteCategory(id, companyId) {
+    this.initializeRepo(companyId);
+    const result = await this.categoryRepo.deleteCategory(id);
+    return result;
   }
 }
 

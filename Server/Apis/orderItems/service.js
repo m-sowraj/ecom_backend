@@ -1,48 +1,47 @@
 const OrderRepository = require('../../repos/orders');
-const { primaryDbConnection } = require('../../firebase/primarydb');
-const { secondaryDbConnection } = require('../../firebase/secondarydb');
+const { getDbConnection } = require('../../firebase/dbConfig');
 const { v4: uuidv4 } = require('uuid');
 
 class OrderService {
   constructor() {
-    this.primaryOrderRepo = new OrderRepository(primaryDbConnection);
-    this.secondaryOrderRepo = new OrderRepository(secondaryDbConnection);
+    this.orderRepo = null;
+  }
+
+  // Initialize repository with correct database connection
+  initializeRepo(companyId) {
+    const dbConnection = getDbConnection(companyId);
+    this.orderRepo = new OrderRepository(dbConnection);
   }
 
   async createOrder(data) {
+    this.initializeRepo(data.company_id);
     data.id = uuidv4();
-    const primaryResult = await this.primaryOrderRepo.createOrder(data);
-
-    return primaryResult;
-
+    const result = await this.orderRepo.createOrder(data);
+    return result;
   }
 
-  async getOrderById(id) {
-    const primaryResult = await this.primaryOrderRepo.getOrderById(id);
- 
-    return primaryResult;
-
+  async getOrderById(id, companyId) {
+    this.initializeRepo(companyId);
+    const result = await this.orderRepo.getOrderById(id);
+    return result;
   }
 
   async getAllOrders(query) {
-    const primaryResult = await this.primaryOrderRepo.getAllOrders(query);
-  
-    return primaryResult;
-
+    this.initializeRepo(query.company_id);
+    const result = await this.orderRepo.getAllOrders(query);
+    return result;
   }
 
-  async updateOrder(id, data) {
-    const primaryResult = await this.primaryOrderRepo.updateOrder(id, data);
-
-    return primaryResult;
-
+  async updateOrder(id, data, companyId) {
+    this.initializeRepo(companyId);
+    const result = await this.orderRepo.updateOrder(id, data);
+    return result;
   }
 
-  async deleteOrder(id) {
-    const primaryResult = await this.primaryOrderRepo.deleteOrder(id);
-
-    return primaryResult;
-
+  async deleteOrder(id, companyId) {
+    this.initializeRepo(companyId);
+    const result = await this.orderRepo.deleteOrder(id);
+    return result;
   }
 }
 

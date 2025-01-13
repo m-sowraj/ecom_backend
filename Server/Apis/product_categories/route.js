@@ -1,13 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const categoryHandler = require('./handler');
-const { isAdmin } = require('../../helpers/jwt');
 
-router.post('/category', isAdmin, categoryHandler.createCategory);
-router.get('/category/:id', isAdmin, categoryHandler.getCategoryById);
-router.put('/category/:id', isAdmin, categoryHandler.updateCategory);
-router.delete('/category/:id', isAdmin, categoryHandler.deleteCategory);
+router.post('/category', categoryHandler.createCategory);
+router.get('/category/:id', categoryHandler.getCategoryById);
+router.put('/category/:id', categoryHandler.updateCategory);
+router.delete('/category/:id', categoryHandler.deleteCategory);
 //list
-router.get('/category', isAdmin, categoryHandler.getAllCategories);
+router.get('/category', categoryHandler.getAllCategories);
 
 module.exports = router;

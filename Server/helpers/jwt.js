@@ -1,126 +1,64 @@
 const jwt = require('jsonwebtoken');
 
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+const REFRESH_SECRET = process.env.REFRESH_SECRET || 'your-refresh-secret';
 
-const JWT_SECRET = 'your_secret_key'; 
-const JWT_REFRESH_SECRET = 'your_refresh_secret_key';
-
-
-function createToken(companyId, userId, userRole) {
-    const payload = {
-        company_id: companyId,
-        user_id: userId,
-        user_role: userRole
-    };
-
-    const options = {
-        expiresIn: '7d'
-    };
-
-    return jwt.sign(payload, JWT_SECRET, options);
+function createToken(company_id, user_id, role) {
+  return jwt.sign(
+    { company_id, user_id, user_role: role },
+    JWT_SECRET,
+    { expiresIn: '7d' }
+  );
 }
 
-
-function createRefreshToken(userId) {
-    const payload = { user_id: userId };
-    const options = {
-        expiresIn: '7d' 
-    };
-
-    return jwt.sign(payload, JWT_REFRESH_SECRET, options);
+function createRefreshToken(user_id) {
+  return jwt.sign(
+    { user_id },
+    REFRESH_SECRET,
+    { expiresIn: '30d' }
+  );
 }
-
 
 function authorize(req, res, next) {
-    const token = req.cookies.token; 
-    const refreshToken = req.cookies.refreshToken;
-
-   
-
+  try {
+    const token = req.cookies.token;
     if (!token) {
-        return res.status(401).json({ message: 'No token provided' });
+      return res.status(401).json({ message: 'No token provided' });
     }
 
-    jwt.verify(token, JWT_SECRET, (err, decoded) => {
-        if (err) {
-            
-            if (err.name === 'TokenExpiredError' && refreshToken) {
-                jwt.verify(refreshToken, JWT_REFRESH_SECRET, (refreshErr, refreshDecoded) => {
-                    if (refreshErr) {
-                        return res.status(401).json({ message: 'Unauthorized' });
-                    }
-
-                    
-                    const newToken = createToken(refreshDecoded.company_id, refreshDecoded.user_id, refreshDecoded.user_role);
-                    res.cookie('token', newToken, { httpOnly: true, maxAge: 3600000 , secure: true,  sameSite: 'None'}); // Set new token in cookie
-
-                    
-                    req.user = refreshDecoded;
-                    next();
-                });
-            } else {
-                return res.status(401).json({ message: 'Unauthorized' });
-            }
-        } else {
-            
-            req.user = decoded;
-            console.log(req.user)
-            next();
-        }
-    });
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = {
+      user_id: decoded.user_id,
+      company_id: decoded.company_id,
+      user_role: decoded.user_role
+    };
+    next();
+  } catch (error) {
+    res.status(401).json({ message: 'Invalid token' });
+  }
 }
 
-//soft auth
+// Similar to authorize but doesn't return error if no token
 function softAuthorize(req, res, next) {
-    const token = req.cookies.token; 
-    const refreshToken = req.cookies.refreshToken;
-
-   
-
-    if (!token) {
-       next();
+  try {
+    const token = req.cookies.token;
+    if (token) {
+      const decoded = jwt.verify(token, JWT_SECRET);
+      req.user = {
+        user_id: decoded.user_id,
+        company_id: decoded.company_id,
+        user_role: decoded.user_role
+      };
     }
-
-    jwt.verify(token, JWT_SECRET, (err, decoded) => {
-        if (err) {
-            
-            if (err.name === 'TokenExpiredError' && refreshToken) {
-                jwt.verify(refreshToken, JWT_REFRESH_SECRET, (refreshErr, refreshDecoded) => {
-                    if (refreshErr) {
-                        next();
-                    }
-
-                    
-                    const newToken = createToken(refreshDecoded.company_id, refreshDecoded.user_id, refreshDecoded.user_role);
-                    res.cookie('token', newToken, { httpOnly: true, maxAge: 3600000 , secure: true,  sameSite: 'None'}); // Set new token in cookie
-
-                    
-                    req.user = refreshDecoded;
-                    next();
-                });
-            } else {
-                next();
-            }
-        } else {
-            
-            req.user = decoded;
-            console.log(req.user)
-            next();
-        }
-    });
-}
-
-function isAdmin(req, res, next) {
-    if(req.user.user_role == 'admin' || req.user.user_role == 'super_admin'){
-        next();
-    }else{
-        res.status(403).json({ message: "You are not authorized to access this resource" });
-    }
+    next();
+  } catch (error) {
+    next();
+  }
 }
 
 module.exports = {
-    createToken,
-    createRefreshToken,
-    authorize,
-    softAuthorize,
-    isAdmin
+  createToken,
+  createRefreshToken,
+  authorize,
+  softAuthorize
 };

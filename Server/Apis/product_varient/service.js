@@ -1,53 +1,54 @@
-const ProductRepository = require('../../repos/ProductVarients'); // Adjust path as needed
-const { primaryDbConnection } = require('../../firebase/primarydb');
-const { secondaryDbConnection } = require('../../firebase/secondarydb');
+const ProductRepository = require('../../repos/ProductVarients');
+const { getDbConnection } = require('../../firebase/dbConfig');
 const { v4: uuidv4 } = require('uuid');
 
 class ProductService {
   constructor() {
-    this.primaryProductRepo = new ProductRepository(primaryDbConnection);
-    this.secondaryProductRepo = new ProductRepository(secondaryDbConnection);
+    this.productRepo = null;
+  }
+
+  // Initialize repository with correct database connection
+  initializeRepo(companyId) {
+    const dbConnection = getDbConnection(companyId);
+    this.productRepo = new ProductRepository(dbConnection);
   }
 
   async createProduct(data) {
-    data.id = uuidv4(); // Generate a unique ID for the product
-    const primaryResult = await this.primaryProductRepo.createProductvarient(data);
-    const secondaryResult = await this.secondaryProductRepo.createProductvarient(data);
-    
-    return { primary: primaryResult, secondary: secondaryResult };
+    this.initializeRepo(data.company_id);
+    data.id = uuidv4();
+    const result = await this.productRepo.createProductvarient(data);
+    return result;
   }
 
-  async getProductById(productId) {
-    const primaryResult = await this.primaryProductRepo.getProductvarientById(productId);
-    return primaryResult;
-
+  async getProductById(productId, companyId) {
+    this.initializeRepo(companyId);
+    const result = await this.productRepo.getProductvarientById(productId);
+    return result;
   }
 
   async getAllProducts(query) {
-    const primaryResult = await this.primaryProductRepo.getAllProductvarients(query);
-    return primaryResult;
-
+    this.initializeRepo(query.company_id);
+    const result = await this.productRepo.getAllProductvarients(query);
+    return result;
   }
 
-  async updateProduct(productId, updatedData) {
-    const primaryResult = await this.primaryProductRepo.updateProductvarient(productId, updatedData);
-    const secondaryResult = await this.secondaryProductRepo.updateProductvarient(productId, updatedData);
-    
-    return { primary: primaryResult, secondary: secondaryResult };
+  async updateProduct(productId, updatedData, companyId) {
+    this.initializeRepo(companyId);
+    const result = await this.productRepo.updateProductvarient(productId, updatedData);
+    return result;
   }
 
-  async deleteProduct(productId) {
-    const primaryResult = await this.primaryProductRepo.deleteProductvarient(productId);
-    const secondaryResult = await this.secondaryProductRepo.deleteProductvarient(productId);
-
-    return { primary: primaryResult, secondary: secondaryResult };
+  async deleteProduct(productId, companyId) {
+    this.initializeRepo(companyId);
+    const result = await this.productRepo.deleteProductvarient(productId);
+    return result;
   }
 
   //getCategoryById
-  async getCategoryById(categoryId) {
-    const primaryResult = await this.primaryProductRepo.getCategoryById(categoryId);
-    return primaryResult;
-
+  async getCategoryById(categoryId, companyId) {
+    this.initializeRepo(companyId);
+    const result = await this.productRepo.getCategoryById(categoryId);
+    return result;
   }
 }
 

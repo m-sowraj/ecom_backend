@@ -7,9 +7,15 @@ class ProductHandler {
       //get cotegory active status
     
 
-      data.company_id = req.user.company_id;
+      const companyId = req.user.company_id;
     
-      const result = await productService.createProduct({...data , user_id: req.user.user_id , company_id: req.user.company_id});
+      data.company_id = companyId;
+    
+      const result = await productService.createProduct({
+        ...data, 
+        user_id: req.user.user_id, 
+        company_id: companyId
+      });
       res.status(201).json(result);
     } catch (error) {
       res.status(500).json({ message: error.message });
@@ -18,7 +24,8 @@ class ProductHandler {
 
   async getProductById(req, res) {
     try {
-      const result = await productService.getProductById(req.params.id);
+      const companyId = req.user.company_id;
+      const result = await productService.getProductById(req.params.id, companyId);
       res.status(200).json(result);
     } catch (error) {
       res.status(404).json({ message: error.message }); // 404 for not found
@@ -55,7 +62,8 @@ class ProductHandler {
 
   async updateProduct(req, res) {
     try {
-      const result = await productService.updateProduct(req.params.id, req.body);
+      const companyId = req.user.company_id;
+      const result = await productService.updateProduct(req.params.id, req.body, companyId);
       res.status(200).json(result);
     } catch (error) {
       res.status(404).json({ message: error.message }); // 404 for not found
@@ -64,7 +72,8 @@ class ProductHandler {
 
   async deleteProduct(req, res) {
     try {
-      const result = await productService.deleteProduct(req.params.id);
+      const companyId = req.user.company_id;
+      const result = await productService.deleteProduct(req.params.id, companyId);
       res.status(200).json(result);
     } catch (error) {
       res.status(404).json({ message: error.message }); // 404 for not found

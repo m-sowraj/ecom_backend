@@ -4,15 +4,27 @@
     "name": "string",
     "domain": "string",
     "created_at": "timestamp",
-    "updated_at": "timestamp",
-    "SETTINGS": {
-      "id": "string",
-      "company_id": "string",
-      "theme": "string",
-      "logo_url": "string",
-      "custom_fields": "json"
+    "updated_at": "timestamp"
+  },
+  "SETTINGS": {
+    "id": "string",
+    "company_id": "string",
+    "theme": {
+      "primary_color": "string",
+      "secondary_color": "string",
+      "background_color": "string",
+      "text_color_1": "string"
+    },
+    "logo_url": "string",
+    "custom_fields": {
+      "phone_number": "string",
+      "address": "string",
+      "email": "string",
+      "facebook": "string",
+      "twitter": "string",
+      "instagram": "string",
+      "whatsapp": "string"
     }
-
   },
   "USER": {
     "id": "string",
@@ -21,7 +33,7 @@
     "phone": "string",
     "hashed_password": "string",
     "name": "string",
-    "role": "string",
+    "role": "string",  // admin, user
     "created_at": "timestamp",
     "updated_at": "timestamp",
     "address": {
@@ -34,7 +46,6 @@
           "state": "string",
           "zip": "string"
         }
-
   },
   "ORDER": {
     "id": "string",
@@ -51,9 +62,9 @@
           "city": "string",
           "state": "string",
           "zip": "string"
-        }
+        },
 
-    "phone": "string",
+    "phone_number": "string",
     "created_at": "timestamp",
     "updated_at": "timestamp"
   },
@@ -87,7 +98,8 @@
     "images": ["string"],
     "price": "float",
     "stock": "integer",
-    "details": "json"
+    "details": "json",
+    "company_id": "string"
   },
   "CATEGORY": {
     "id": "string",

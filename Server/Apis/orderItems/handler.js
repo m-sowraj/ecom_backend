@@ -1,9 +1,14 @@
-const orderService = require('./service'); // Adjust path as needed
+const orderService = require('./service');
 
 class OrderHandler {
   async createOrder(req, res) {
     try {
-      const result = await orderService.createOrder({...req.body , user_id: req.user.user_id , company_id: req.user.company_id});
+      const companyId = req.user.company_id;
+      const result = await orderService.createOrder({
+        ...req.body, 
+        user_id: req.user.user_id, 
+        company_id: companyId
+      });
       
       res.status(201).json(result);
     } catch (error) {
@@ -13,7 +18,8 @@ class OrderHandler {
 
   async getOrderById(req, res) {
     try {
-      const result = await orderService.getOrderById(req.params.id);
+      const companyId = req.user.company_id;
+      const result = await orderService.getOrderById(req.params.id, companyId);
       res.status(200).json(result);
     } catch (error) {
       res.status(404).json({ message: error.message });
@@ -29,6 +35,7 @@ class OrderHandler {
         status: req.query.status,
         startDate: req.query.startDate,
         endDate: req.query.endDate,
+        company_id: req.user.company_id,
       };
 
       const result = await orderService.getAllOrders(query);
@@ -40,7 +47,8 @@ class OrderHandler {
 
   async updateOrder(req, res) {
     try {
-      const result = await orderService.updateOrder(req.params.id, req.body);
+      const companyId = req.user.company_id;
+      const result = await orderService.updateOrder(req.params.id, req.body, companyId);
       res.status(200).json(result);
     } catch (error) {
       res.status(404).json({ message: error.message });
@@ -49,7 +57,8 @@ class OrderHandler {
 
   async deleteOrder(req, res) {
     try {
-      const result = await orderService.deleteOrder(req.params.id);
+      const companyId = req.user.company_id;
+      const result = await orderService.deleteOrder(req.params.id, companyId);
       res.status(200).json(result);
     } catch (error) {
       res.status(404).json({ message: error.message });
