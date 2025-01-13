@@ -4,17 +4,13 @@ require('firebase/compat/firestore');
 // Database configurations for different companies
 const dbConfigs = {
   'company1': {
-    apiKey: "AIzaSyA5CF5YC7K8wnygKyg8H2BQUlJmY1Cqo0Y",
-    authDomain: "website-sowrajm.firebaseapp.com",
-    projectId: "website-sowrajm",
-    storageBucket: "website-sowrajm.firebasestorage.app",
-    messagingSenderId: "514442393360",
-    appId: "1:514442393360:web:70416af1f1f59bf0c5d795",
-    measurementId: "G-PD2ELW3RLK",
-    razorpay: {
-      key_id: "rzp_live_company1_key",
-      key_secret: "company1_secret_key"
-    },
+    apiKey: "AIzaSyD_rnXd3BtoJ1drSBgUkqkc8zR6hkrLp6Y",
+    authDomain: "globechemicalsllc.firebaseapp.com",
+    projectId: "globechemicalsllc",
+    storageBucket: "globechemicalsllc.appspot.com",
+    messagingSenderId: "529379158041",
+    appId: "1:529379158041:web:89c52dbe451248725c2288",
+    measurementId: "G-Q0VYX5JVD0",
     email: {
       host: 'smtp.gmail.com',
       port: 587,
@@ -30,9 +26,29 @@ const dbConfigs = {
       templateName: 'text_otp'
     }
   },
-  // Add more company configurations as needed
+  'AURANUTRI': {
+    apiKey: "AIzaSyA5CF5YC7K8wnygKyg8H2BQUlJmY1Cqo0Y",
+    authDomain: "website-sowrajm.firebaseapp.com",
+    projectId: "website-sowrajm",
+    storageBucket: "website-sowrajm.firebasestorage.app",
+    messagingSenderId: "514442393360",
+    appId: "1:514442393360:web:70416af1f1f59bf0c5d795",
+    measurementId: "G-PD2ELW3RLK",
+    razorpay: {
+      key_id: "rzp_live_7zuH154CVQA9YI",
+      key_secret: "NEI0BRFsHp30NQXUkdnIAUFj"
+    },
+    email: {
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false,
+      auth: {
+        user: 'your-email@gmail.com',
+        pass: 'your-app-specific-password'
+      }
+    }
+  },
   'default': {
-    // Your default configuration (current configuration)
     apiKey: "AIzaSyA5CF5YC7K8wnygKyg8H2BQUlJmY1Cqo0Y",
     authDomain: "website-sowrajm.firebaseapp.com",
     projectId: "website-sowrajm",
