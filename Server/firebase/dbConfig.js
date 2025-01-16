@@ -3,7 +3,7 @@ require('firebase/compat/firestore');
 
 // Database configurations for different companies
 const dbConfigs = {
-  'company1': {
+  'NILGIRIS': {
     apiKey: "AIzaSyD_rnXd3BtoJ1drSBgUkqkc8zR6hkrLp6Y",
     authDomain: "globechemicalsllc.firebaseapp.com",
     projectId: "globechemicalsllc",
@@ -12,12 +12,10 @@ const dbConfigs = {
     appId: "1:529379158041:web:89c52dbe451248725c2288",
     measurementId: "G-Q0VYX5JVD0",
     email: {
-      host: 'smtp.gmail.com',
-      port: 587,
-      secure: false,
+      service: 'gmail',
       auth: {
-        user: 'your-email@gmail.com',
-        pass: 'your-app-specific-password'
+        user: 'anthillnetworks@gmail.com',
+        pass: 'wble rawv mcmn rxkd'
       }
     },
     whatsapp: {
@@ -26,7 +24,7 @@ const dbConfigs = {
       templateName: 'text_otp'
     }
   },
-  'AURANUTRI': {
+  'd2f4906d-8e71-4623-afc1-c3af5653ae9a': {
     apiKey: "AIzaSyA5CF5YC7K8wnygKyg8H2BQUlJmY1Cqo0Y",
     authDomain: "website-sowrajm.firebaseapp.com",
     projectId: "website-sowrajm",
@@ -39,7 +37,7 @@ const dbConfigs = {
       key_secret: "NEI0BRFsHp30NQXUkdnIAUFj"
     },
     email: {
-      host: 'smtp.gmail.com',
+      service: 'gmail',
       port: 587,
       secure: false,
       auth: {
@@ -61,7 +59,7 @@ const dbConfigs = {
       key_secret: "NEI0BRFsHp30NQXUkdnIAUFj"
     },
     email: {
-      host: 'smtp.gmail.com',
+      service: 'gmail',
       port: 587,
       secure: false,
       auth: {

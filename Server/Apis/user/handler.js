@@ -55,11 +55,14 @@ class UserHandler {
         }
       } else if (password) {
         // Traditional password login
-        if (!email) {
-          return res.status(400).json({ message: 'Email is required for password login' });
+        if (email) {
+          user = await userService.getUserByEmail(email, company_id);
+        } else if (phone) {
+          user = await userService.getUserByPhone(phone, company_id);
+        } else {
+          return res.status(400).json({ message: 'Email or phone number is required for password login' });
         }
-        
-        user = await userService.getUserByEmail(email, company_id);
+
         if (!user) {
           return res.status(401).json({ 
             message: 'Would you like to receive an OTP?',
