@@ -32,7 +32,7 @@ class OTPService {
     try {
       await axios.post('https://api.wappie.in/v2/whatsapp/messages/sendDirectly', {
         from: whatsappConfig.fromNumber,
-        to: phone,
+        to: '+91'+phone,
         type: "template",
         template: {
           name: whatsappConfig.templateName,

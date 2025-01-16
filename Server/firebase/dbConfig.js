@@ -36,6 +36,11 @@ const dbConfigs = {
       key_id: "rzp_live_7zuH154CVQA9YI",
       key_secret: "NEI0BRFsHp30NQXUkdnIAUFj"
     },
+    whatsapp: {
+      apiKey: '30c60cad789882970dced98498ec2332',
+      fromNumber: '+918762724278',
+      templateName: 'text_otp'
+    },
     email: {
       service: 'gmail',
       port: 587,
