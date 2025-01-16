@@ -6,23 +6,48 @@ const OTPService = require('../../helpers/otp');
 class UserHandler {
   async createUser(req, res) {
     try {
-      const { password, ...userData } = req.body;
+      const { password, email, phone, otp, ...userData } = req.body;
       const companyId = req.user?.company_id || userData.company_id;
+
+      // Verify OTP first
+      if (email) {
+        const isValidOTP = await userService.verifyEmailOTP(email, otp, companyId);
+        if (!isValidOTP) {
+          return res.status(401).json({ message: 'Invalid OTP' });
+        }
+      } else if (phone) {
+        const isValidOTP = await userService.verifyOTP(phone, otp, companyId);
+        if (!isValidOTP) {
+          return res.status(401).json({ message: 'Invalid OTP' });
+        }
+      }
 
       // Hash the password
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      //check if email already exists
-      const existingEmail = await userService.getUserByEmail(userData.email, companyId);
-      if (existingEmail) {
-        return res.status(400).json({ message: 'Email already exists' });
+      // Check if email/phone already exists
+      if (email) {
+        const existingEmail = await userService.getUserByEmail(email, companyId);
+        if (existingEmail) {
+          return res.status(400).json({ message: 'Email already exists' });
+        }
       }
-  
-      // Create a new user with the hashed password
+      if (phone) {
+        const existingPhone = await userService.getUserByPhone(phone, companyId);
+        if (existingPhone) {
+          return res.status(400).json({ message: 'Phone number already exists' });
+        }
+      }
+
+      // Create user
       const result = await userService.createUser({ 
-        ...userData, 
+        ...userData,
+        email,
+        phone, 
         hashed_password: hashedPassword,
-        company_id: companyId 
+        company_id: companyId,
+        email_verified: email ? true : false,
+        phone_verified: phone ? true : false
       });
       
       res.status(201).json(result);
@@ -33,8 +58,32 @@ class UserHandler {
   
   async login(req, res) {
     try {
-      const { email, password, phone, otp, company_id } = req.body;
+      const { email, phone, password, otp, company_id } = req.body;
       let user;
+
+      // Handle password-based login
+      if (password) {
+        if (email) {
+          user = await userService.getUserByEmail(email, company_id);
+        } else if (phone) {
+          user = await userService.getUserByPhone(phone, company_id);
+        }
+
+        if (!user) {
+          return res.status(401).json({ 
+            message: 'Would you like to receive an OTP?',
+            requireOTP: true 
+          });
+        }
+
+        const isMatch = await bcrypt.compare(password, user.hashed_password);
+        if (!isMatch) {
+          return res.status(401).json({ 
+            message: 'Would you like to receive an OTP?',
+            requireOTP: true 
+          });
+        }
+      }
 
       // Check if this is an OTP verification attempt
       if (otp) {
@@ -52,28 +101,6 @@ class UserHandler {
             return res.status(401).json({ message: 'Invalid OTP' });
           }
           user = await userService.getUserByPhone(phone, company_id);
-        }
-      } else if (password) {
-        // Traditional password login
-        if (!email) {
-          return res.status(400).json({ message: 'Email is required for password login' });
-        }
-        
-        user = await userService.getUserByEmail(email, company_id);
-        if (!user) {
-          return res.status(401).json({ 
-            message: 'Would you like to receive an OTP?',
-            requireOTP: true 
-          });
-        }
-
-        // Verify the password
-        const isMatch = await bcrypt.compare(password, user.hashed_password);
-        if (!isMatch) {
-          return res.status(401).json({ 
-            message: 'Would you like to receive an OTP?',
-            requireOTP: true 
-          });
         }
       } else {
         // Neither password nor OTP provided - send OTP
@@ -286,6 +313,40 @@ class UserHandler {
       await userService.markEmailAsVerified(email, company_id);
       
       res.status(200).json({ message: 'Email verified successfully' });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+
+  async resetPassword(req, res) {
+    try {
+      const { email, phone, otp, newPassword, company_id } = req.body;
+      
+      // Verify OTP
+      let isValidOTP = false;
+      let user = null;
+      
+      if (email) {
+        isValidOTP = await userService.verifyEmailOTP(email, otp, company_id);
+        user = await userService.getUserByEmail(email, company_id);
+      } else if (phone) {
+        isValidOTP = await userService.verifyOTP(phone, otp, company_id);
+        user = await userService.getUserByPhone(phone, company_id);
+      }
+
+      if (!isValidOTP) {
+        return res.status(401).json({ message: 'Invalid OTP' });
+      }
+
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      // Hash and update the new password
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      await userService.updateUser(user.id, { hashed_password: hashedPassword }, company_id);
+
+      res.status(200).json({ message: 'Password reset successful' });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }

@@ -34,8 +34,7 @@ class UserService {
 
   async getUserByPhone(phone, companyId) {
     this.initializeRepo(companyId);
-    const result = await this.userRepo.getUserByPhone(phone);
-    return result;
+    return await this.userRepo.getUserByPhone(phone);
   }
 
   async getAllUsers(query) {
@@ -65,7 +64,9 @@ class UserService {
       phone,
       otp,
       expiresAt,
-      verified: false
+      verified: false,
+      attempts: 0,
+      purpose: 'verification'
     });
   }
 
@@ -75,12 +76,19 @@ class UserService {
     
     if (!storedOTP) return false;
     if (storedOTP.expiresAt < new Date()) return false;
+    if (storedOTP.attempts >= 3) return false;
+    
+    // Increment attempts
+    await this.userRepo.incrementOTPAttempts(phone);
+    
     if (storedOTP.otp !== otp) return false;
     
+    // Mark as verified if successful
+    await this.userRepo.markOTPVerified(phone);
     return true;
   }
 
-  async saveEmailOTP(email, otp, companyId) {
+  async saveEmailOTP(email, otp, companyId, purpose = 'verification') {
     this.initializeRepo(companyId);
     const expiresAt = new Date();
     expiresAt.setMinutes(expiresAt.getMinutes() + 10);
@@ -89,7 +97,9 @@ class UserService {
       email,
       otp,
       expiresAt,
-      verified: false
+      verified: false,
+      attempts: 0,
+      purpose
     });
   }
 
@@ -99,8 +109,15 @@ class UserService {
     
     if (!storedOTP) return false;
     if (storedOTP.expiresAt < new Date()) return false;
+    if (storedOTP.attempts >= 3) return false;
+    
+    // Increment attempts
+    await this.userRepo.incrementEmailOTPAttempts(email);
+    
     if (storedOTP.otp !== otp) return false;
     
+    // Mark as verified if successful
+    await this.userRepo.markEmailOTPVerified(email);
     return true;
   }
 

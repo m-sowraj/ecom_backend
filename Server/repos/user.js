@@ -2,6 +2,8 @@ class UserRepository {
     constructor(db) {
       this.db = db;
       this.collection = this.db.collection('users');
+      this.otpCollection = this.db.collection('otps');
+      this.emailOtpCollection = this.db.collection('email_otps');
     }
 
     static getCurrentISODate() {
@@ -94,7 +96,131 @@ class UserRepository {
       await docRef.delete();
       return { id, message: 'User deleted successfully' };
     }
-  }
+
+    // OTP related methods
+    async saveOTP(data) {
+      const { phone } = data;
+      const otpRef = this.otpCollection.doc(phone);
+      await otpRef.set({
+        ...data,
+        createdAt: UserRepository.getCurrentISODate(),
+        updatedAt: UserRepository.getCurrentISODate()
+      });
+      return data;
+    }
+
+    async saveEmailOTP(data) {
+      const { email } = data;
+      const otpRef = this.emailOtpCollection.doc(email);
+      await otpRef.set({
+        ...data,
+        createdAt: UserRepository.getCurrentISODate(),
+        updatedAt: UserRepository.getCurrentISODate()
+      });
+      return data;
+    }
+
+    async getOTP(phone) {
+      const otpRef = this.otpCollection.doc(phone);
+      const doc = await otpRef.get();
+      if (!doc.exists) return null;
+      return doc.data();
+    }
+
+    async getEmailOTP(email) {
+      const otpRef = this.emailOtpCollection.doc(email);
+      const doc = await otpRef.get();
+      if (!doc.exists) return null;
+      return doc.data();
+    }
+
+    async incrementOTPAttempts(phone) {
+      const otpRef = this.otpCollection.doc(phone);
+      await otpRef.update({
+        attempts: this.db.FieldValue.increment(1),
+        updatedAt: UserRepository.getCurrentISODate()
+      });
+    }
+
+    async incrementEmailOTPAttempts(email) {
+      const otpRef = this.emailOtpCollection.doc(email);
+      await otpRef.update({
+        attempts: this.db.FieldValue.increment(1),
+        updatedAt: UserRepository.getCurrentISODate()
+      });
+    }
+
+    async markOTPVerified(phone) {
+      const otpRef = this.otpCollection.doc(phone);
+      await otpRef.update({
+        verified: true,
+        updatedAt: UserRepository.getCurrentISODate()
+      });
+    }
+
+    async markEmailOTPVerified(email) {
+      const otpRef = this.emailOtpCollection.doc(email);
+      await otpRef.update({
+        verified: true,
+        updatedAt: UserRepository.getCurrentISODate()
+      });
+    }
+
+    async updateUserByPhone(phone, data) {
+      const snapshot = await this.collection.where('mobileNumber', '==', phone).get();
+      if (snapshot.empty) {
+        throw new Error('User not found');
+      }
+      
+      const userDoc = snapshot.docs[0];
+      await userDoc.ref.update({
+        ...data,
+        updatedAt: UserRepository.getCurrentISODate()
+      });
+      
+      const updatedDoc = await userDoc.ref.get();
+      return { id: updatedDoc.id, ...updatedDoc.data() };
+    }
+
+    async updateUserByEmail(email, data) {
+      const snapshot = await this.collection.where('email', '==', email).get();
+      if (snapshot.empty) {
+        throw new Error('User not found');
+      }
+      
+      const userDoc = snapshot.docs[0];
+      await userDoc.ref.update({
+        ...data,
+        updatedAt: UserRepository.getCurrentISODate()
+      });
+      
+      const updatedDoc = await userDoc.ref.get();
+      return { id: updatedDoc.id, ...updatedDoc.data() };
+    }
+
+    // Helper method to clean up expired OTPs (can be run periodically)
+    async cleanupExpiredOTPs() {
+      const now = new Date();
+      
+      // Clean phone OTPs
+      const expiredPhoneOTPs = await this.otpCollection
+        .where('expiresAt', '<', now)
+        .get();
+      
+      expiredPhoneOTPs.forEach(async (doc) => {
+        await doc.ref.delete();
+      });
+
+      // Clean email OTPs
+      const expiredEmailOTPs = await this.emailOtpCollection
+        .where('expiresAt', '<', now)
+        .get();
+      
+      expiredEmailOTPs.forEach(async (doc) => {
+        await doc.ref.delete();
+      });
+    }
+}
   
   module.exports = UserRepository;
   
