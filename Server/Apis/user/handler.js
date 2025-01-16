@@ -102,6 +102,31 @@ class UserHandler {
           }
           user = await userService.getUserByPhone(phone, company_id);
         }
+      } else if (password) {
+        // Traditional password login
+        if (email) {
+          user = await userService.getUserByEmail(email, company_id);
+        } else if (phone) {
+          user = await userService.getUserByPhone(phone, company_id);
+        } else {
+          return res.status(400).json({ message: 'Email or phone number is required for password login' });
+        }
+
+        if (!user) {
+          return res.status(401).json({ 
+            message: 'Would you like to receive an OTP?',
+            requireOTP: true 
+          });
+        }
+
+        // Verify the password
+        const isMatch = await bcrypt.compare(password, user.hashed_password);
+        if (!isMatch) {
+          return res.status(401).json({ 
+            message: 'Would you like to receive an OTP?',
+            requireOTP: true 
+          });
+        }
       } else {
         // Neither password nor OTP provided - send OTP
         if (email) {

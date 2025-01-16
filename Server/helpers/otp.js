@@ -9,7 +9,13 @@ class OTPService {
 
   static async sendEmailOTP(email, otp, companyId) {
     const emailConfig = getEmailConfig(companyId);
-    const transporter = nodemailer.createTransport(emailConfig);
+    const transporter = nodemailer.createTransport({
+      service: emailConfig.auth.service,
+      auth: {
+        user: emailConfig.auth.user,
+        pass: emailConfig.auth.pass
+      }
+    });
 
     await transporter.sendMail({
       from: emailConfig.auth.user,
@@ -26,7 +32,7 @@ class OTPService {
     try {
       await axios.post('https://api.wappie.in/v2/whatsapp/messages/sendDirectly', {
         from: whatsappConfig.fromNumber,
-        to: phone,
+        to: '+91'+phone,
         type: "template",
         template: {
           name: whatsappConfig.templateName,
