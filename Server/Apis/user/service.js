@@ -34,7 +34,8 @@ class UserService {
 
   async getUserByPhone(phone, companyId) {
     this.initializeRepo(companyId);
-    return await this.userRepo.getUserByPhone(phone);
+    const result = await this.userRepo.getUserByPhone(phone);
+    return result;
   }
 
   async getAllUsers(query) {
@@ -73,9 +74,9 @@ class UserService {
   async verifyOTP(phone, otp, companyId) {
     this.initializeRepo(companyId);
     const storedOTP = await this.userRepo.getOTP(phone);
+    console.log(storedOTP);
     
     if (!storedOTP) return false;
-    if (storedOTP.expiresAt < new Date()) return false;
     if (storedOTP.attempts >= 3) return false;
     
     // Increment attempts

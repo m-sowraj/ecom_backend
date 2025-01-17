@@ -39,7 +39,7 @@ class UserRepository {
 
     //get user by phone
     async getUserByPhone(phone) {
-      const snapshot = await this.collection.where('mobileNumber', '==', phone).get();
+      const snapshot = await this.collection.where('phone', '==', phone).get();
       if (snapshot.empty) {
         return null;
       } 
@@ -136,16 +136,18 @@ class UserRepository {
 
     async incrementOTPAttempts(phone) {
       const otpRef = this.otpCollection.doc(phone);
+      const doc = await otpRef.get();
       await otpRef.update({
-        attempts: this.db.FieldValue.increment(1),
+        attempts: doc.data().attempts + 1,
         updatedAt: UserRepository.getCurrentISODate()
       });
     }
 
     async incrementEmailOTPAttempts(email) {
       const otpRef = this.emailOtpCollection.doc(email);
+      const doc = await otpRef.get();
       await otpRef.update({
-        attempts: this.db.FieldValue.increment(1),
+        attempts: doc.data().attempts + 1,
         updatedAt: UserRepository.getCurrentISODate()
       });
     }

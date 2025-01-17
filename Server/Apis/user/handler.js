@@ -9,6 +9,19 @@ class UserHandler {
       const { password, email, phone, otp, ...userData } = req.body;
       const companyId = req.user?.company_id || userData.company_id;
 
+      // check if phone is already exists
+      if (phone) {
+        const existingPhone = await userService.getUserByPhone(phone, companyId);
+        if (existingPhone) {
+          return res.status(400).json({ message: 'Phone number already exists' });
+        }
+      } else if (email) {
+        const existingEmail = await userService.getUserByEmail(email, companyId);
+        if (existingEmail) {
+          return res.status(400).json({ message: 'Email already exists' });
+        }
+      }
+
       // Verify OTP first
       if (email) {
         const isValidOTP = await userService.verifyEmailOTP(email, otp, companyId);
@@ -42,8 +55,8 @@ class UserHandler {
       // Create user
       const result = await userService.createUser({ 
         ...userData,
-        email,
-        phone, 
+        email: email || null,
+        phone: phone || null, 
         hashed_password: hashedPassword,
         company_id: companyId,
         email_verified: email ? true : false,

@@ -37,8 +37,8 @@ const dbConfigs = {
       key_secret: "NEI0BRFsHp30NQXUkdnIAUFj"
     },
     whatsapp: {
-      apiKey: '30c60cad789882970dced98498ec2332',
-      fromNumber: '+918762724278',
+      apiKey: 'c5346f01b112c6abab4c67c13b8f2dd3',
+      fromNumber: '+918438537818',
       templateName: 'text_otp'
     },
     email: {
