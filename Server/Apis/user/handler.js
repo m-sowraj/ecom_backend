@@ -83,19 +83,21 @@ class UserHandler {
         }
 
         if (!user) {
-          return res.status(401).json({ 
+          return res.status(402).json({ 
             message: 'Invalid credentials',
-            requireOTP: true 
+            reason: 'Invalid credentials'
           });
         }
 
         const isMatch = await bcrypt.compare(password, user.hashed_password);
         if (!isMatch) {
-          return res.status(401).json({ 
+          return res.status(402).json({ 
             message: 'Invalid credentials',
-            requireOTP: true 
+            reason: 'password'
           });
         }
+
+        
 
         // If password matches, proceed with login
         const accessToken = createToken(user.company_id, user.id, user.role);
