@@ -72,10 +72,10 @@ class UserHandler {
   async login(req, res) {
     try {
       const { email, phone, password, otp, company_id } = req.body;
-      let user;
 
       // Handle password-based login
       if (password) {
+        let user;
         if (email) {
           user = await userService.getUserByEmail(email, company_id);
         } else if (phone) {
@@ -84,7 +84,7 @@ class UserHandler {
 
         if (!user) {
           return res.status(401).json({ 
-            message: 'Would you like to receive an OTP?',
+            message: 'Invalid credentials',
             requireOTP: true 
           });
         }
@@ -92,13 +92,47 @@ class UserHandler {
         const isMatch = await bcrypt.compare(password, user.hashed_password);
         if (!isMatch) {
           return res.status(401).json({ 
-            message: 'Would you like to receive an OTP?',
+            message: 'Invalid credentials',
             requireOTP: true 
           });
         }
+
+        // If password matches, proceed with login
+        const accessToken = createToken(user.company_id, user.id, user.role);
+        const refreshToken = createRefreshToken(user.id);
+
+        // Set cookies and return response
+        res.cookie('token', accessToken, {
+          httpOnly: true,
+          secure: true,
+          maxAge: 604800000,
+          sameSite: 'None'
+        });
+        res.cookie('refreshToken', refreshToken, {
+          httpOnly: true,
+          secure: true,
+          maxAge: 604800000,
+          sameSite: 'None'
+        });
+        res.cookie('user', user.role, {
+          httpOnly: true,
+          secure: true,
+          maxAge: 604800000,
+          sameSite: 'None'
+        });
+
+        res.status(200).json({
+          message: 'Login successful',
+          user: { 
+            id: user.id, 
+            role: user.role, 
+            company_id: user.company_id 
+          },
+          name: user.name
+        });
       }
 
-      // Check if this is an OTP verification attempt
+      // Handle OTP-based login
       if (otp) {
         if (email) {
           // Verify email OTP
@@ -127,8 +161,7 @@ class UserHandler {
 
         if (!user) {
           return res.status(401).json({ 
-            message: 'Would you like to receive an OTP?',
-            requireOTP: true 
+            message: 'User not found'
           });
         }
 
