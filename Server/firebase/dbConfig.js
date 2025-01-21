@@ -12,7 +12,7 @@ const dbConfigs = {
     appId: "1:529379158041:web:89c52dbe451248725c2288",
     measurementId: "G-Q0VYX5JVD0",
     email: {
-      service: 'gmail',
+      service: 'Gmail',
       auth: {
         user: 'anthillnetworks@gmail.com',
         pass: 'wble rawv mcmn rxkd'
