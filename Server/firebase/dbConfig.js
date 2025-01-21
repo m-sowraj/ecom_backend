@@ -3,7 +3,7 @@ require('firebase/compat/firestore');
 
 // Database configurations for different companies
 const dbConfigs = {
-  'NILGIRIS': {
+  'd2f4906d-8e71-4623-afc1-c3af5654ae2a': {
     apiKey: "AIzaSyD_rnXd3BtoJ1drSBgUkqkc8zR6hkrLp6Y",
     authDomain: "globechemicalsllc.firebaseapp.com",
     projectId: "globechemicalsllc",
@@ -19,9 +19,9 @@ const dbConfigs = {
       }
     },
     whatsapp: {
-      apiKey: '30c60cad789882970dced98498ec2332',
-      fromNumber: '+918762724278',
-      templateName: 'text_otp'
+      apiKey: '30c60cad789882970dced9849ssss8ec2332',
+      fromNumber: '+918762724211178',
+      templateName: 'text_otppp'
     }
   },
   'd2f4906d-8e71-4623-afc1-c3af5653ae9a': {
