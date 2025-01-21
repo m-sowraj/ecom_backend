@@ -109,14 +109,11 @@ class UserService {
     const storedOTP = await this.userRepo.getEmailOTP(email);
     
     if (!storedOTP) return false;
-    if (storedOTP.expiresAt < new Date()) return false;
     if (storedOTP.attempts >= 3) return false;
     
     // Increment attempts
     await this.userRepo.incrementEmailOTPAttempts(email);
-    
     if (storedOTP.otp !== otp) return false;
-    
     // Mark as verified if successful
     await this.userRepo.markEmailOTPVerified(email);
     return true;
