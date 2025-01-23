@@ -82,7 +82,7 @@ class UserService {
     // Increment attempts
     await this.userRepo.incrementOTPAttempts(phone);
     
-    if (storedOTP.otp !== otp) return false;
+    if (storedOTP.otp != otp) return false;
     
     // Mark as verified if successful
     await this.userRepo.markOTPVerified(phone);
