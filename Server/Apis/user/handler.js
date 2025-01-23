@@ -133,9 +133,10 @@ class UserHandler {
           name: user.name
         });
       }
-
+      let user;
       // Handle OTP-based login
       if (otp) {
+        
         if (email) {
           // Verify email OTP
           const isValidOTP = await userService.verifyEmailOTP(email, otp, company_id);
@@ -146,10 +147,18 @@ class UserHandler {
         } else if (phone) {
           // Verify phone OTP
           const isValidOTP = await userService.verifyOTP(phone, otp, company_id);
+          console.log("isValidOTP>>",isValidOTP);
           if (!isValidOTP) {
             return res.status(401).json({ message: 'Invalid OTP' });
           }
-          user = await userService.getUserByPhone(phone, company_id);
+          
+          const existingPhone = await userService.getUserByPhone(phone, company_id);
+          console.log(">>>>>",existingPhone);
+          if (!existingPhone) {
+            return res.status(401).json({ message: 'Invalid OTP' });
+          }
+          user = existingPhone;
+          console.log(">>>>><<<<<",user);
         }
       } else if (password) {
         // Traditional password login
@@ -335,6 +344,7 @@ class UserHandler {
       
       // Verify OTP
       const isValid = await userService.verifyOTP(phone, otp, company_id);
+      console.log("isValid>>",isValid);
       
       if (!isValid) {
         return res.status(400).json({ message: 'Invalid OTP' });
@@ -397,7 +407,7 @@ class UserHandler {
       
       // Verify OTP
       let isValidOTP = false;
-      let user = null;
+      let user
       
       if (email) {
         isValidOTP = await userService.verifyEmailOTP(email, otp, company_id);
@@ -422,6 +432,42 @@ class UserHandler {
       res.status(200).json({ message: 'Password reset successful' });
     } catch (error) {
       res.status(500).json({ message: error.message });
+    }
+  }
+
+  async logout(req, res) {
+    try {
+  
+      const cookieOptions = {
+        httpOnly: true, // Cookie cannot be accessed via JavaScript
+        secure: true,   // Cookie only sent over HTTPS
+        sameSite: 'None', // Allow cross-site cookie access
+        path: '/',      // Cookie accessible on all paths
+        domain: 'ecomserver.anthillnetworks.com,' // Specific domain that can access cookie
+      };
+
+      // Clear all authentication cookies
+      res.clearCookie('token', cookieOptions);
+      res.clearCookie('refreshToken', cookieOptions);
+      res.clearCookie('user', cookieOptions);
+      res.clearCookie('role', cookieOptions);
+      res.clearCookie('username', cookieOptions);
+
+      // If you're storing any session data, clear it
+      if (req.session) {
+        req.session.destroy();
+      }
+
+      res.status(200).json({ 
+        message: 'Logged out successfully',
+        success: true 
+      });
+    } catch (error) {
+      console.error('Logout error:', error);
+      res.status(500).json({ 
+        message: error.message,
+        success: false 
+      });
     }
   }
 }

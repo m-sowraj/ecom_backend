@@ -39,7 +39,7 @@ class UserRepository {
 
     //get user by phone
     async getUserByPhone(phone) {
-      const snapshot = await this.collection.doc(phone).get();
+      const snapshot = await this.collection.where('phone', '==', phone).get();
       if (snapshot.empty) {
         return null;
       } 
@@ -47,6 +47,7 @@ class UserRepository {
       snapshot.forEach(doc => {
         user = { id: doc.id, ...doc.data() };
       });
+   
       return user;
     }
   
@@ -169,7 +170,7 @@ class UserRepository {
     }
 
     async updateUserByPhone(phone, data) {
-      const snapshot = await this.collection.where('mobileNumber', '==', phone).get();
+      const snapshot = await this.collection.where('phone', '==', phone).get();
       if (snapshot.empty) {
         throw new Error('User not found');
       }
@@ -182,6 +183,13 @@ class UserRepository {
       
       const updatedDoc = await userDoc.ref.get();
       return { id: updatedDoc.id, ...updatedDoc.data() };
+    }
+
+    async verifyOTP(phone, otp) {
+      const snapshot = await this.collection.where('phone', '==', phone).get();
+      if (snapshot.empty) {
+        return null;
+      }
     }
 
     async updateUserByEmail(email, data) {

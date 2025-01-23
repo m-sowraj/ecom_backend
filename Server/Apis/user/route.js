@@ -22,4 +22,7 @@ router.get('/users', authorize, userHandler.getAllUsers);
 router.put('/users/:id', authorize, userHandler.updateUser);
 router.delete('/users/:id', authorize, userHandler.deleteUser);
 
+// Update the logout route to handle both authenticated and unauthenticated requests
+router.post('/logout', (req, res) => userHandler.logout(req, res));
+
 module.exports = router;
