@@ -11,6 +11,10 @@ const dbConfigs = {
     messagingSenderId: "529379158041",
     appId: "1:529379158041:web:89c52dbe451248725c2288",
     measurementId: "G-Q0VYX5JVD0",
+    razorpay: {
+      key_id: "rzp_live_7zuH154CVQA9YI",
+      key_secret: "NEI0BRFsHp30NQXUkdnIAUFj"
+    },
     email: {
       service: 'Gmail',
       auth: {
@@ -33,8 +37,8 @@ const dbConfigs = {
     appId: "1:514442393360:web:70416af1f1f59bf0c5d795",
     measurementId: "G-PD2ELW3RLK",
     razorpay: {
-      key_id: "rzp_live_7zuH154CVQA9YI",
-      key_secret: "NEI0BRFsHp30NQXUkdnIAUFj"
+      key_id: "rzp_live_CSN4KEneH8oV66",
+      key_secret: "oASYKLbZrZC4T10Qeg3kfAHP"
     },
     whatsapp: {
       apiKey: 'c5346f01b112c6abab4c67c13b8f2dd3',
