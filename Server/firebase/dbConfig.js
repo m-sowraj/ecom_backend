@@ -56,16 +56,16 @@ const dbConfigs = {
     }
   },
   'default': {
-    apiKey: "AIzaSyA5CF5YC7K8wnygKyg8H2BQUlJmY1Cqo0Y",
-    authDomain: "website-sowrajm.firebaseapp.com",
-    projectId: "website-sowrajm",
-    storageBucket: "website-sowrajm.firebasestorage.app",
-    messagingSenderId: "514442393360",
-    appId: "1:514442393360:web:70416af1f1f59bf0c5d795",
-    measurementId: "G-PD2ELW3RLK",
+    apiKey: "AaaaaaIzaSyA5CF5YC7K8wnygKyg8H2BQUlJmY1Cqo0Y",
+    authDomain: "aaaaaawebsite-sowrajm.firebaseapp.com",
+    projectId: "aaaaaawebsite-sowrajm",
+    storageBucket: "aaaaaawebsite-sowrajm.firebasestorage.app",
+    messagingSenderId: "aaaaaa514442393360",
+    appId: "1:aaaaaa514442393360:web:70416af1f1f59bf0c5d795",
+    measurementId: "aaaaaG-PD2ELW3RLK",
     razorpay: {
-      key_id: "rzp_live_7zuH154CVQA9YI",
-      key_secret: "NEI0BRFsHp30NQXUkdnIAUFj"
+      key_id: "aaaaazp_live_7zuH154CVQA9YI",
+      key_secret: "aaaaaNEI0BRFsHp30NQXUkdnIAUFj"
     },
     email: {
       service: 'gmail',

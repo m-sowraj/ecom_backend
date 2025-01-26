@@ -32,6 +32,12 @@ function authorize(req, res, next) {
       company_id: decoded.company_id,
       user_role: decoded.user_role
     };
+
+    if (req.body.company_id != decoded.company_id) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    // console.log(req.user);
     next();
   } catch (error) {
     res.status(401).json({ message: 'Invalid token' });
