@@ -34,7 +34,7 @@ function authorize(req, res, next) {
     };
 
     if (req.body.company_id != decoded.company_id && req.params.company_id != decoded.company_id) {
-      return res.status(401).json({ message: 'Unauthorized' });
+      return res.status(401).json({ message: 'Unauthorized' , company_id_from_body: req.body.company_id , company_id_from_params: req.params.company_id , company_id_from_token: decoded.company_id });
     }
 
     // console.log(req.user);
