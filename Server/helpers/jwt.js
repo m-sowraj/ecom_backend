@@ -33,7 +33,7 @@ function authorize(req, res, next) {
       user_role: decoded.user_role
     };
 
-    if (req.body.company_id != decoded.company_id || req.params.company_id != decoded.company_id) {
+    if (req.body.company_id != decoded.company_id && req.params.company_id != decoded.company_id) {
       return res.status(401).json({ message: 'Unauthorized' });
     }
 
