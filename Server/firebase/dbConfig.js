@@ -37,8 +37,8 @@ const dbConfigs = {
     appId: "1:514442393360:web:70416af1f1f59bf0c5d795",
     measurementId: "G-PD2ELW3RLK",
     razorpay: {
-      key_id: "rzp_live_CSN4KEneH8oV66",
-      key_secret: "oASYKLbZrZC4T10Qeg3kfAHP"
+      key_id: "rzp_live_2OGYOW12Qdpan9",
+      key_secret: "PrUG3B6DzOUgZsgOMIPTAhef"
     },
     whatsapp: {
       apiKey: 'c5346f01b112c6abab4c67c13b8f2dd3',
